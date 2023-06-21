@@ -8,14 +8,17 @@ import useImage from 'use-image';
 
 const Image1 = (props) => {
   const [image1] = useImage('https://images.pexels.com/photos/3620411/pexels-photo-3620411.jpeg?auto=compress&cs=tinysrgb&w=800');
-
   const [image2] = useImage('https://images.pexels.com/photos/1148960/pexels-photo-1148960.jpeg?auto=compress&cs=tinysrgb&w=800');
   const [image3] = useImage('https://images.pexels.com/photos/4355702/pexels-photo-4355702.jpeg?auto=compress&cs=tinysrgb&w=800');
   const [image4] = useImage('https://images.pexels.com/photos/3310694/pexels-photo-3310694.jpeg?auto=compress&cs=tinysrgb&w=800');
+  const [image5] = useImage('https://images.pexels.com/photos/1375736/pexels-photo-1375736.jpeg?auto=compress&cs=tinysrgb&w=800');
+  const [image6] = useImage('https://images.pexels.com/photos/1544724/pexels-photo-1544724.jpeg?auto=compress&cs=tinysrgb&w=800');
+  const [image7] = useImage('https://images.pexels.com/photos/2728263/pexels-photo-2728263.jpeg?auto=compress&cs=tinysrgb&w=800');
+  const [image8] = useImage('https://images.pexels.com/photos/3328128/pexels-photo-3328128.jpeg?auto=compress&cs=tinysrgb&w=800');
 
   console.log(props)
-  const  images = [image1,image2,image3,image4];
-  const randomImageUrl = images[(props.indexX+props.indexY)%4];
+  const  images = [image1,image2,image3,image4,image5,image6,image7,image8];
+  const randomImageUrl = images[(props.indexX+props.indexY)%8];
 
   return <Image image={randomImageUrl} {...props}/>;
 };
@@ -49,12 +52,16 @@ const App = () => {
     Math.floor((-stagePos.y + window.innerHeight * 2) / HEIGHT) * HEIGHT;
 
   const gridComponents = [];
+  
   var i = 0;
   for (var x = startX; x < endX; x += WIDTH) {
+ 
     for (var y = startY; y < endY; y += HEIGHT) {
       if (i === 4) {
         i = 0;
       }
+
+      const isOddColumn = Math.floor((x<0 ? -(x) : x)/ WIDTH) % 2 === 1;
 
       const indexX = Math.abs(x / WIDTH) % (grid.length*8);
       const indexY = Math.abs(y / HEIGHT) % (grid[0].length*8);
@@ -66,13 +73,13 @@ const App = () => {
 
         <Image1
           x={x}
-          y={y}
+          y={isOddColumn? y+50 : y}
           width={WIDTH}
           indexX={indexX}
-          indexY={indexY}
+          indexY={isOddColumn? indexY+50: indexY}
           height={HEIGHT}
           stroke="white"
-          strokeWidth={5}
+          strokeWidth={40}
           cornerRadius={10}
         />
       );
@@ -120,6 +127,7 @@ const App = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleMouseMove);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -162,19 +170,21 @@ const App = () => {
   };
 
   return (
-    <>
+    <div>
+      <div style={{position:"fixed",background:"white",width:"50vw",top:0,left:0,bottom:0,zIndex:100}}></div>
     <Stage
       width={canvasWidth}
       height={canvasHeight}
       ref={stageRef}
       draggable
+      onMouseOver={handleMouseDown}
       onMouseEnter={handleMouseDown}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
       <Layer>{gridComponents}</Layer>
     </Stage>
-    </>
+    </div>
   );
 };
 
